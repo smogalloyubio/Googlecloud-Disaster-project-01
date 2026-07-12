@@ -617,12 +617,10 @@ This provides:
 ![Velero Backup Created](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.21.54.png)
 
 ---
+![Velero deployment](https://github.com/smogalloyubio/Googlecloud-Disaster-project-01/blob/main/picture/Screenshot%202026-01-24%20at%2013.26.08.png)
 
 # Backup Validation Result
 ---
-
-
-```
 **![velero backup](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.22.31.png):**
 
 
