@@ -201,12 +201,9 @@ The objective of Stage 2 is to automate the application delivery process by impl
 - Image publishing to Artifact Registry
 - Kubernetes deployment automation
 - GitOps-based application synchronization using Argo CD
-
-This stage removes manual deployment processes and ensures that every application change follows a controlled and repeatable delivery workflow.
 ---
 
 # Why This Stage Is Required
-
 Traditional deployment methods require engineers to manually:
 
 - Build application images
@@ -245,33 +242,208 @@ google cloud artifact registry
 ![artifact registry](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2011.11.50.png)
 ---
 
+
+
+
+
+
+
+
+
+
 ## Step 4: Kubernetes Cluster Configuration and Manifests
 After provisioning the Kubernetes cluster using Terraform, the next step was to configure the application workloads using Kubernetes manifests.
 
 ![Google kubernstes cluster](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2012.33.10.png)
 ---
-## Step 5: Install and Configure Argo CD (GitOps Controller)
-In this step, Argo CD is installed on the Kubernetes cluster to enable GitOps-based continuous delivery. It acts as the reconciliation engine that continuously syncs the desired state stored in GitHub with the actual state of the Kubernetes cluster.
-```
+
+# Step 5 — Install and Configure Argo CD GitOps Controller
+
+## Objective
+
+After deploying the Kubernetes cluster and preparing the application manifests, the next step is to implement a GitOps-based deployment workflow using Argo CD.
+Argo CD is responsible for continuously monitoring the Kubernetes manifests stored in GitHub and ensuring that the actual state of the GKE cluster always matches the desired state defined in the repository.
+This removes the need for manual Kubernetes deployments and provides an automated, reliable, and auditable application delivery process.
+
+---
+
+## Why Argo CD Was Selected
+Although this works, it introduces operational challenges:
+* Manual deployment processes
+* Configuration drift between environments
+* Limited deployment visibility
+* Increased risk of human error
+* Difficult rollback procedures
+
+Argo CD solves these challenges by implementing GitOps principles.
+With GitOps:
+* Git becomes the single source of truth
+* Every deployment change is version controlled
+* Argo CD automatically detects configuration changes
+* The Kubernetes cluster continuously reconciles with Git
+
+---
+
+# Install Argo CD on GKE
+
+## Create Argo CD Namespace
+
+Argo CD is deployed into its own dedicated namespace to isolate GitOps management components from application workloads.
+
+```bash
 kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-kubectl get pods - n argocd
-# check the  service of the argocd
-kubectl  get svc -n argocd
-# change the  service orgocd to loadbalancer
-kubectl  patch  svc/argocd-server -n argocd -p
-# connect the git repo to argocd
-Create Argo CD Application pointing to GitHub repo
-Enable auto-sync
-kubectl get secret argocd-initial-admin-secret -n argocd \
--o jsonpath="{.data.password}" | base64 -d
+```
 
-kubectl patch svc argocd-server -n argocd \
--p '{"spec": {"type": "LoadBalancer"}}'
-argocd login <ARGOCD_SERVER_IP> --username admin --password <PASSWORD> --insecure
-argocd repo add https://github.com/smogalloyubio/GoogleCloud-Disaster-Recovery-project.git
+---
+
+## Deploy Argo CD Components
+Install Argo CD using the official Kubernetes manifests:
+
+```bash
+kubectl apply \
+-n argocd \
+-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+This deploys the required Argo CD components:
+* Argo CD API Server
+* Application Controller
+* Repository Server
+* Application Set Controller
+* Redis component
+---
+
+## Verify Argo CD Installation
+Check that all Argo CD pods are running:
+
+```bash
+kubectl get pods -n argocd
+```
+Expected result:
 
 ```
+
+NAME                                      STATUS
+
+argocd-server                             Running
+
+argocd-repo-server                        Running
+
+argocd-application-controller             Running
+
+```
+
+---
+
+# Expose Argo CD Web Interface
+
+By default, the Argo CD server is only accessible internally inside the Kubernetes cluster.
+
+For external access, the service type is changed to LoadBalancer.
+
+```bash
+kubectl patch svc argocd-server \
+-n argocd \
+-p '{"spec":{"type":"LoadBalancer"}}'
+```
+
+Verify the service:
+
+```bash
+kubectl get svc -n argocd
+```
+---
+
+# Retrieve Argo CD Administrator Password
+
+Argo CD automatically creates an initial administrator password stored inside a Kubernetes secret.
+
+Retrieve the password:
+
+```bash
+kubectl get secret argocd-initial-admin-secret \
+-n argocd \
+-o jsonpath="{.data.password}" | base64 -d
+```
+---
+
+# Authenticate with Argo CD CLI
+
+Login to the Argo CD server:
+
+```
+argocd login <ARGOCD_SERVER_IP> \
+--username admin \
+--password <PASSWORD> \
+--insecure
+```
+---
+
+# Connect Argo CD to GitHub Repository
+
+The Kubernetes manifests repository is registered as the deployment source.
+
+```bash
+argocd repo add \
+https://github.com/smogalloyubio/GoogleCloud-Disaster-Recovery-project.git
+```
+Argo CD can now monitor the repository and detect Kubernetes configuration changes.
+---
+
+# Create Argo CD Application
+The application is created by linking:
+* GitHub repository
+* Kubernetes manifest directory
+* Target GKE cluster
+* Application namespace
+
+```
+argocd app create webapp \
+--repo https://github.com/smogalloyubio/GoogleCloud-Disaster-Recovery-project.git \
+--path apps \
+--dest-server https://kubernetes.default.svc \
+--dest-namespace dev
+```
+
+---
+Enable automatic deployment whenever changes are committed to Git.
+
+```
+
+argocd app set webapp \
+--sync-policy automated
+```
+
+Enable self-healing:
+
+```bash
+argocd app set webapp \
+--self-heal
+```
+
+Enable automatic pruning of removed Kubernetes resources:
+
+```bash
+argocd app set webapp \
+--auto-prune
+```
+
+---
+
+# Deployment Verification
+
+Check application synchronization status:
+
+```
+argocd app get webapp
+```
+
+Verify Kubernetes resources:
+
+```bash
+kubectl get all -n dev
+```
+
+---
 ![argocd cd](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-23%20at%2023.38.26.png)
 
 ---
