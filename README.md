@@ -514,14 +514,6 @@ Verify installation:
 ```bash
 velero version --client-only
 ```
-
-Expected output:
-
-```
-Client:
-	Version: v1.15.0
-```
-
 ---
 # Configure Velero With Google Cloud Storage
 Velero requires access to a GCS bucket where backup data will be stored.
@@ -546,7 +538,7 @@ Check Velero components:
 ```bash
 kubectl get pods -n velero
 ```
-![Velero backup]()
+![Velero backup](https://github.com/smogalloyubio/Googlecloud-Disaster-project-01/blob/main/picture/Screenshot%202026-01-24%20at%2013.20.24.png)
 
 Verify Velero configuration:
 
