@@ -1,17 +1,27 @@
-## Cloud-Native Web Application on GKE - GitOps CI/CD & Disaster Recovery
 
+
+
+
+# Tools and Technologies Used
 # Cloud-Native Web Application on GKE — GitOps CI/CD & Disaster Recovery Platform
+<p align="center">
 
----
+<img src="https://skillicons.dev/icons?i=gcp" width="60"/>
+<img src="https://skillicons.dev/icons?i=kubernetes" width="60"/>
+<img src="https://skillicons.dev/icons?i=docker" width="60"/>
+<img src="https://skillicons.dev/icons?i=terraform" width="60"/>
+<img src="https://skillicons.dev/icons?i=githubactions" width="60"/>
+<img src="https://skillicons.dev/icons?i=git" width="60"/>
+<img src="https://skillicons.dev/icons?i=typescript" width="60"/>
+<img src="https://skillicons.dev/icons?i=nodejs" width="60"/>
+<img src="https://skillicons.dev/icons?i=react" width="60"/>
+
+</p>
 
 # Executive Summary
-
 Modern organizations require reliable, automated, and scalable platforms to deliver applications quickly while maintaining security, availability, and operational stability.
-
 This project demonstrates the design and implementation of a production-style cloud-native application delivery platform on **Google Kubernetes Engine (GKE)** using **Infrastructure as Code (Terraform), Containerization (Docker), Continuous Integration (GitHub Actions), GitOps Deployment (Argo CD), and Disaster Recovery (Velero).**
-
 The platform automates the complete application lifecycle:
-
 - Infrastructure provisioning
 - Container image creation
 - Continuous integration
