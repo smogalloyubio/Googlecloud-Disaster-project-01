@@ -185,6 +185,7 @@ Once applied, Terraform automatically creates the following cloud resources:
     sudo apt-get update && sudo apt-get install terraform
   ```
 ```
+![Terraform  modoles](https://github.com/smogalloyubio/Googlecloud-Disaster-project-01/blob/main/picture/Screenshot%202026-01-24%20at%2012.25.09.png)
 --- 
 
 
