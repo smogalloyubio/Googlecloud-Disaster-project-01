@@ -239,17 +239,13 @@ A CI/CD and GitOps approach provides:
 **![Gitaction pipeline](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2011.12.05.png)**
 
 
-google cloud artifact registry 
+## google cloud artifact registry 
+the docker image  store in artifact registry 
 ![artifact registry](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2011.11.50.png)
+
+
+![Artifact  registry image](https://github.com/smogalloyubio/Googlecloud-Disaster-project-01/blob/main/picture/Screenshot%202026-01-24%20at%2013.42.09.png)
 ---
-
-
-
-
-
-
-
-
 
 
 ## Step 4: Kubernetes Cluster Configuration and Manifests
@@ -319,20 +315,6 @@ Check that all Argo CD pods are running:
 ```bash
 kubectl get pods -n argocd
 ```
-Expected result:
-
-```
-
-NAME                                      STATUS
-
-argocd-server                             Running
-
-argocd-repo-server                        Running
-
-argocd-application-controller             Running
-
-```
-
 ---
 
 # Expose Argo CD Web Interface
