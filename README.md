@@ -454,27 +454,181 @@ argocd app sync apps
 ---
 
 ### Step 7: Install and Configure Velero
+---
 
-Install Velero with GCS backend:
+# Step 7 — Install and Configure Velero Backup Solution
+
+## Objective
+The objective of this stage is to implement a Disaster Recovery (DR) solution for the Kubernetes application running on Google Kubernetes Engine (GKE).
+Velero is deployed as the Kubernetes backup and recovery platform. It protects application workloads, Kubernetes resources, and cluster configurations by creating backups and storing them securely in Google Cloud Storage (GCS).
+This enables the platform to recover from scenarios such as:
+* Accidental namespace deletion
+* Application configuration errors
+* Kubernetes resource corruption
+* Cluster failures
+* Data loss incidents
+
+---
+
+# Why Velero Was Selected
+Kubernetes is designed to maintain application availability, but it does not provide built-in disaster recovery capabilities.
+If Kubernetes resources are accidentally deleted, the cluster fails, or application configuration is lost, the workloads cannot automatically be recovered without backups.
+Velero solves this problem by providing:
+* Kubernetes resource backup
+* Namespace-level backup
+* Cluster resource protection
+* Restore capability
+* Scheduled backup support
+* Cloud storage integration
+For this project, Velero uses **Google Cloud Storage (GCS)** as the backup storage backend.
+
+---
+
+# Disaster Recovery Architecture
+
+The backup workflow follows this architecture:
+---
+
+# Install Velero CLI
+
+Download the Velero client:
 
 ```bash
-
-# Download the latest Linux release
 wget https://github.com/vmware-tanzu/velero/releases/download/v1.15.0/velero-v1.15.0-linux-amd64.tar.gz
+```
 
-# Extract the file
+Extract the package:
+
+```bash
 tar -xvf velero-v1.15.0-linux-amd64.tar.gz
+```
 
-# Move the binary to your path
+Move Velero binary into the system path:
+
+```bash
 sudo mv velero-v1.15.0-linux-amd64/velero /usr/local/bin/
+```
 
-# Verify installation
+Verify installation:
+
+```bash
 velero version --client-only
+```
+
+Expected output:
+
+```
+Client:
+	Version: v1.15.0
+```
+
+---
+# Configure Velero With Google Cloud Storage
+Velero requires access to a GCS bucket where backup data will be stored.
+The installation connects:
+* Kubernetes cluster
+* Velero controller
+* Google Cloud Storage bucket
+* Google Cloud authentication credentials
+Install Velero:
+
+```bash
 velero install \
-  --provider gcp \
-  --plugins velero/velero-plugin-for-gcp:v1.8.0 \
-  --bucket <GCS_BUCKET_NAME> \
-  --secret-file ./credentials-velero
+--provider gcp \
+--plugins velero/velero-plugin-for-gcp:v1.8.0 \
+--bucket <GCS_BUCKET_NAME> \
+--secret-file ./credentials-velero
+```
+---
+# Verify Velero Deployment
+Check Velero components:
+
+```bash
+kubectl get pods -n velero
+```
+![Velero backup]()
+
+Verify Velero configuration:
+
+```bash
+velero backup-location get
+```
+
+This confirms that Velero is successfully connected to Google Cloud Storage.
+---
+
+![Velero Installation and Backup Configuration](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.22.31.png)
+
+---
+
+# Step 8 — Create Kubernetes Application Backup
+
+## Objective
+
+Create a backup of the application environment to validate the disaster recovery process.
+
+The backup contains Kubernetes resources required to restore the application, including:
+
+* Deployments
+* Services
+* ConfigMaps
+* Secrets
+* Persistent volume information
+* Namespace configuration
+
+---
+
+# Create Application Namespace Backup
+
+Create a Velero backup:
+
+```bash
+velero backup create webapp-backup \
+--include-namespaces dev
+```
+
+This creates a backup containing all Kubernetes resources inside the application namespace.
+
+---
+
+# Check Backup Status
+
+View available backups:
+
+```bash
+velero backup get
+```
+
+Example:
+
+```
+NAME             STATUS
+
+webapp-backup    Completed
+```
+
+Detailed backup information:
+
+```bash
+velero backup describe webapp-backup
+```
+
+This provides:
+
+* Backup creation time
+* Resources included
+* Backup storage location
+* Completion status
+
+---
+
+![Velero Backup Created](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.21.54.png)
+
+---
+
+# Backup Validation Result
+---
+
 
 ```
 **![velero backup](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.22.31.png):**
