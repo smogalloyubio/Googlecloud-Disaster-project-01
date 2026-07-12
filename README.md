@@ -316,7 +316,7 @@ Check that all Argo CD pods are running:
 kubectl get pods -n argocd
 ```
 ---
-
+![Argocd Diagram](https://github.com/smogalloyubio/Googlecloud-Disaster-project-01/blob/main/picture/Screenshot%202026-01-24%20at%2012.35.26.png)
 # Expose Argo CD Web Interface
 
 By default, the Argo CD server is only accessible internally inside the Kubernetes cluster.
