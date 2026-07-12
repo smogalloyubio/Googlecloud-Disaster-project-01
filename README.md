@@ -534,86 +534,39 @@ velero install \
 ---
 # Verify Velero Deployment
 Check Velero components:
-
 ```bash
 kubectl get pods -n velero
 ```
 ![Velero backup](https://github.com/smogalloyubio/Googlecloud-Disaster-project-01/blob/main/picture/Screenshot%202026-01-24%20at%2013.20.24.png)
-
 Verify Velero configuration:
-
 ```bash
 velero backup-location get
 ```
-
 This confirms that Velero is successfully connected to Google Cloud Storage.
 ---
 
 ![Velero Installation and Backup Configuration](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.22.31.png)
 
 ---
-
 # Step 8 — Create Kubernetes Application Backup
-
 ## Objective
-
 Create a backup of the application environment to validate the disaster recovery process.
-
 The backup contains Kubernetes resources required to restore the application, including:
-
 * Deployments
 * Services
 * ConfigMaps
 * Secrets
 * Persistent volume information
 * Namespace configuration
-
 ---
-
 # Create Application Namespace Backup
 
 Create a Velero backup:
-
 ```bash
 velero backup create webapp-backup \
 --include-namespaces dev
 ```
-
-This creates a backup containing all Kubernetes resources inside the application namespace.
-
 ---
-
-# Check Backup Status
-
-View available backups:
-
-```bash
-velero backup get
-```
-
-Example:
-
-```
-NAME             STATUS
-
-webapp-backup    Completed
-```
-
-Detailed backup information:
-
-```bash
-velero backup describe webapp-backup
-```
-
-This provides:
-
-* Backup creation time
-* Resources included
-* Backup storage location
-* Completion status
-
----
-
 ![Velero Backup Created](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.21.54.png)
 
 ---
@@ -622,52 +575,36 @@ This provides:
 # Backup Validation Result
 ---
 **![velero backup](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.22.31.png):**
-
-
 ---
-
 ### Step 8: Backup Application Namespace
-
 Create a namespace-scoped backup:
-
 ```bash
 velero backup create netflix-backup --include-namespaces all-namespace
 velero  backup  dscribe netflix-backup
 velero  backup get
 
 ```
-
 Check backup status:
-
 ```bash
 velero backup get
 ```
 
 ![velero backup](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.21.54.png)
-
-
-
 ---
-
 ### Step 9: Disaster Simulation
 
 * Delete the application namespace or entire cluster
-
 ```bash
 kubectl delete namespace -all-namespace  dev  canary argocd
 kubectl get namespace 
 ```
-
 **![check  namespace](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.26.08.png):**
 
 > Add screenshot showing namespace deletion
 
 ---
-
 ### Step 10: Restore from Backup
-
 Restore the backup:
-
 ```bash
 velero restore create --from-backup netflix-backup
 ```
@@ -677,9 +614,7 @@ Verify restore:
 ```bash
 kubectl get all -n <APP_NAMESPACE>
 ```
-
 **![retore namespace](https://github.com/smogalloyubio/02-Devops-project-NetflixClone-app/blob/main/picture/Screenshot%202026-01-24%20at%2013.36.05.png):**
-
 
 ---
 
@@ -694,15 +629,7 @@ After the restore process, the following were confirmed:
 - Services were restored and accessible
 - The application returned to a fully functional state
 - No data or configuration loss was observed
----
-## Security Considerations
 
-The project follows cloud security best practices to ensure a secure and controlled environment:
-- IAM roles are configured using the principle of least privilege
-- Service accounts are isolated and scoped per component
-- Sensitive information and secrets are not stored in the Git repository
-- GitOps provides a complete audit trail of all infrastructure and deployment changes
----
 ![storage bucket for velero backup](https://github.com/smogalloyubio/GoogleCloud-Disaster-Recovery-project-/blob/main/picture/Screenshot%202026-01-24%20at%2013.40.09.png)
 
 
